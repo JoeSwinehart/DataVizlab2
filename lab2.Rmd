@@ -43,7 +43,7 @@ library(tidyverse)
 ```
 
 ```{r tv states viz}
-
+#david will try to tackle this one
 
 ```
 
