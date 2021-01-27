@@ -12,6 +12,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
 ```{r raw data}
 install.packages("fivethirtyeight")
 remotes::install_github("fivethirtyeightdata/fivethirtyeightdata")
@@ -20,9 +21,8 @@ library(fivethirtyeightdata)
 library(here)
 library(tidyverse)
 ```
-```
 
-``` {r google trends viz 1}
+```{r google trends viz 1}
 
 
 ```
