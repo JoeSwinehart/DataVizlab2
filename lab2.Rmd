@@ -27,8 +27,8 @@ trends_clean <- google_trends %>%
   pivot_longer(c(`hurricane_harvey_us`, `hurricane_irma_us`, `hurricane_maria_us`, `hurricane_jose_us`), names_to = "Hurricane", values_to = "Ranking")
 
 
-ggplot(data=trends_clean, aes(x=date, y=Ranking, fill = Hurricane))+
-geom_col(position = 'dodge')
+ggplot(data=trends_clean, aes(x=date, y=Ranking, color = Hurricane))+
+geom_line()
   
 
 ```
