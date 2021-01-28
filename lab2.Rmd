@@ -55,6 +55,26 @@ geom_line()
 
 ```{r comic characters viz 1}
 
+genderplot1 <- comic_characters %>%
+  select("publisher",
+         "name",
+         "sex",
+         "alive",
+         "appearances") #%>%
+  #mutate(appearances = as.character(appearances),
+        #(fct_reorder(sex, "Male Characters",
+                      #"Female Characters",
+                     #"Genderless Characters",
+                     #"Agender Characters",
+                    # "NA" = "No Gender")))
+
+ggplot(genderplot1, aes(y = sex)) +
+  geom_bar(aes(fill = sex)) +
+  scale_colour_viridis_c() +
+  labs(title = "Proportion of Characters by Sex", 
+       subtitle = "As appear within DC or Marvel Comics",
+       x = "Number of Appearances",
+       y = "Gender Identification")
 
 ```
 
