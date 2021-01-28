@@ -28,13 +28,20 @@ trends_clean <- google_trends %>%
 
 
 ggplot(data=trends_clean, aes(x=date, y=Ranking, color = Hurricane))+
-geom_line()
+geom_line()+ 
+  labs(title = "Google Search Popularity", 
+       subtitle = "According to the Google Trends dashboard",
+       x = "Date",
+       y = "Search Ranking")
   
 
 ```
 
 ```{r google trends viz 2}
-
+#this is awful and should be burned. I disavow this work.
+trends_clean %>% 
+  ggplot(aes(date, Ranking, color = Hurricane)) + 
+  geom_ribbon(aes(ymin = Ranking - 1, ymax = Ranking + 1), fill = "cornflowerblue") 
 
 ```
 
@@ -87,3 +94,6 @@ ggplot(genderplot1, aes(y = sex)) +
 
 
 ```
+
+
+
