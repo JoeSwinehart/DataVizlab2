@@ -28,7 +28,7 @@ trends_clean <- google_trends %>%
 
 
 ggplot(data=trends_clean, aes(x=date, y=Ranking, fill = Hurricane))+
-geom_col(stat = "identity", position = 'dodge')
+geom_col(position = 'dodge')
   
 
 ```
