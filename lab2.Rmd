@@ -38,10 +38,17 @@ geom_line()+
 ```
 
 ```{r google trends viz 2}
-#this is awful and should be burned. I disavow this work.
+#I don't understand why these aren't solid. No doubt something dumb.
 trends_clean %>% 
-  ggplot(aes(date, Ranking, color = Hurricane)) + 
-  geom_ribbon(aes(ymin = Ranking - 1, ymax = Ranking + 1), fill = "cornflowerblue") 
+  ggplot(aes(date, Ranking)) + 
+  geom_line()+
+  geom_ribbon(aes(
+    ymin = Ranking - 1, 
+    ymax = Ranking + 1), 
+    fill = "cornflowerblue",
+    alpha = .5)+
+  facet_wrap(~Hurricane, ncol = 1)
+  
 
 ```
 
