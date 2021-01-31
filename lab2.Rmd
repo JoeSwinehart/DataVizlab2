@@ -77,6 +77,9 @@ ggplot(tvstate_viz) +
   geom_vline(xintercept = as.Date("2017-09-18"), linetype = "dotted", color= "grey", size = 0.75) +
   geom_text(aes(x = as.Date("2017-10-01"), y = 2.7, label = "Las Vegas\nshooting"), size = 4, color = "grey") +
   geom_vline(xintercept = as.Date("2017-10-01"), linetype = "dotted", color= "grey", size = 0.75) +
+  geom_text(aes(x = as.Date("2017-08-28"), y = 0.8, label = "Texas"), size = 5, color = "black") +
+  geom_text(aes(x = as.Date("2017-09-09"), y = 1.5, label = "Florida"), size = 5, color = "black") +
+  geom_text(aes(x = as.Date("2017-10-01"), y = 1.35, label = "Puerto Rico"), size = 5, color = "black") +  
   labs(x = "",
        y = "Share of sentences",
        title = "National Cable News Networks")
