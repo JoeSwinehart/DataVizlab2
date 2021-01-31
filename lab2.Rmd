@@ -65,6 +65,18 @@ trends_clean %>%
 ```{r tv states viz}
 #david will try to tackle this one
 
+ggplot(tvstate_viz) +
+  # geom_line(aes(x = date, y = florida)) +
+  geom_ribbon(aes(x = date, y = florida, ymin = 0, ymax = florida), fill = "deeppink2", alpha = 0.98) + 
+  # geom_line(aes(x = date, y = texas)) +
+  geom_ribbon(aes(x = date, y = texas, ymin = 0, ymax = texas), fill = "sienna2", alpha = 0.98) + 
+  # geom_line(aes(x = date, y = puerto_rico)) +
+  geom_ribbon(aes(x = date, y = puerto_rico, ymin = 0, ymax = puerto_rico), fill = "cyan2", alpha = 0.98) +
+  labs(x = "",
+       y = "Share of sentences",
+       title = "National Cable News Networks") +
+  theme_minimal()
+
 ```
 
 ```{r comic characters viz 1}
