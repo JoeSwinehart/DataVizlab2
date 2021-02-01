@@ -123,16 +123,16 @@ genderplot2 <- comic_characters %>%
          "sex",
          "alive",
          "appearances") %>% 
-  drop_na() %>% 
-  group_by(sex, publisher) %>% 
-  summarise(char_gen = n())
-  
-ggplot(genderplot2, aes(y = char_gen, fill = sex)) +
-   geom_bar(aes(position = "stack", stat = "identity"))+
+  drop_na() 
+
+ggplot(genderplot2, aes(y = sex, x = appearances, fill = sex)) +
+  geom_jitter() +
+  scale_colour_viridis_c() +
   labs(title = "Proportion of Characters by Sex", 
        subtitle = "As appear within DC or Marvel Comics",
        x = "Number of Appearances",
        y = "Gender Identification")
+  
 ```
 
 ```{r comic characters viz 3}
