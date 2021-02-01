@@ -20,6 +20,7 @@ library(fivethirtyeight)
 library(fivethirtyeightdata)
 library(here)
 library(tidyverse)
+library(lubridate)
 ```
 
 ```{r google trends viz 1}
@@ -38,16 +39,17 @@ geom_line()+
 ```
 
 ```{r google trends viz 2}
-#I don't understand why these aren't solid. No doubt something dumb.
+#Geom_ribbons have updated ymin & ymax so they appear on the figures
 trends_clean %>% 
   ggplot(aes(date, Ranking)) + 
   geom_line()+
   geom_ribbon(aes(
-    ymin = Ranking - 1, 
-    ymax = Ranking + 1), 
+    ymin = 0, 
+    ymax = Ranking), 
     fill = "cornflowerblue",
-    alpha = .5)+
-  facet_wrap(~Hurricane, ncol = 1)
+    alpha = .85)+
+  facet_wrap(~Hurricane, ncol = 1) +
+  theme_minimal()
   
 
 ```
@@ -63,20 +65,22 @@ trends_clean %>%
 ```
 
 ```{r tv states viz}
-#david will try to tackle this one
-library(lubridate)
-ggplot(tvstate_viz) +
-  geom_text(aes(x = as.Date("2017-08-25"), y = 3.1, label = "Harvey\nLandfall"), size = 4, color = "grey") +
-  geom_ribbon(aes(x = date, y = florida, ymin = 0, ymax = florida), fill = "deeppink2", alpha = 0.98) + 
-  geom_vline(xintercept = as.Date("2017-08-25"), linetype = "dotted", color= "grey", size = 0.75) +
+#Near replication of the 538 figure
+ggplot(tv_states) +
+#Filling in ribbons first  
+  geom_ribbon(aes(x = date, y = florida, ymin = 0, ymax = florida), fill = "deeppink2", alpha = 0.98) +   
   geom_ribbon(aes(x = date, y = texas, ymin = 0, ymax = texas), fill = "sienna2", alpha = 0.98) + 
+  geom_ribbon(aes(x = date, y = puerto_rico, ymin = 0, ymax = puerto_rico), fill = "cyan2", alpha = 0.98) +  
+#Identifying incidents (e.g., hurricane landfalls)
+  geom_text(aes(x = as.Date("2017-08-25"), y = 3.1, label = "Harvey\nLandfall"), size = 4, color = "grey") +
+  geom_vline(xintercept = as.Date("2017-08-25"), linetype = "dotted", color= "grey", size = 0.75) +
   geom_text(aes(x = as.Date("2017-09-07"), y = 3.3, label = "Irma\nLandfall"), size = 4, color = "grey") +
   geom_vline(xintercept = as.Date("2017-09-07"), linetype = "dotted", color= "grey", size = 0.75) +
-  geom_ribbon(aes(x = date, y = puerto_rico, ymin = 0, ymax = puerto_rico), fill = "cyan2", alpha = 0.98) +
   geom_text(aes(x = as.Date("2017-09-18"), y = 2.1, label = "Maria\nLandfall"), size = 4, color = "grey") +
   geom_vline(xintercept = as.Date("2017-09-18"), linetype = "dotted", color= "grey", size = 0.75) +
   geom_text(aes(x = as.Date("2017-10-01"), y = 2.7, label = "Las Vegas\nshooting"), size = 4, color = "grey") +
   geom_vline(xintercept = as.Date("2017-10-01"), linetype = "dotted", color= "grey", size = 0.75) +
+#Labeling each state  
   geom_text(aes(x = as.Date("2017-08-28"), y = 0.8, label = "Texas"), size = 5, color = "black") +
   geom_text(aes(x = as.Date("2017-09-09"), y = 1.5, label = "Florida"), size = 5, color = "black") +
   geom_text(aes(x = as.Date("2017-10-01"), y = 1.35, label = "Puerto Rico"), size = 5, color = "black") +  
@@ -113,7 +117,22 @@ ggplot(genderplot1, aes(y = sex)) +
 
 ```{r comic characters viz 2}
 
-
+genderplot2 <- comic_characters %>%
+  select("publisher",
+         "name",
+         "sex",
+         "alive",
+         "appearances") %>% 
+  drop_na() %>% 
+  group_by(sex, publisher) %>% 
+  summarise(char_gen = n())
+  
+ggplot(genderplot2, aes(y = char_gen, fill = sex)) +
+   geom_bar(aes(position = "stack", stat = "identity"))+
+  labs(title = "Proportion of Characters by Sex", 
+       subtitle = "As appear within DC or Marvel Comics",
+       x = "Number of Appearances",
+       y = "Gender Identification")
 ```
 
 ```{r comic characters viz 3}
