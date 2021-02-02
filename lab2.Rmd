@@ -23,8 +23,9 @@ library(tidyverse)
 library(lubridate)
 ```
 
+Visualize the change in trends for each hurricane over time in one plot with three scales. Map color to a discrete scale.
 ```{r google trends viz 1}
-##Visualize the change in trends for each hurricane over time in one plot with three scales. Map color to a discrete scale.
+
 trends_clean <- google_trends %>% 
   pivot_longer(c(`hurricane_harvey_us`, `hurricane_irma_us`, `hurricane_maria_us`, `hurricane_jose_us`), names_to = "Hurricane", values_to = "Ranking")
 
@@ -39,8 +40,8 @@ geom_line()+
 
 ```
 
+Visualize the trends again, this time with solid shapes.
 ```{r google trends viz 2}
-##Visualize the trends again, this time with solid shapes.
 #Geom_ribbons have updated ymin & ymax so they appear on the figures
 #thanks, David...I couldn't figure it out!
 trends_clean %>% 
@@ -61,8 +62,9 @@ trends_clean %>%
 
 ```
 
+Same relationship, but mapped to a continuous scale.
+
 ```{r google trends viz 3}
-##Same relationship, but mnapped to a continuous scale.
 
   ggplot(trends_clean, aes(date, Hurricane)) + 
   geom_tile(aes(fill=Ranking)) +
