@@ -86,13 +86,12 @@ Same relationship, but mapped to a continuous scale.
 #Viz 1 with vertical lines and labels marking landfall
   ggplot(trends_clean, aes(date, Ranking, color = Hurricane)) +
     geom_line(size = 1) +
-    geom_vline(aes(xintercept = date), 
+    geom_vline(aes(xintercept = date, color = Hurricane), 
                hurricane_landfall, 
-               size = 1, 
-               color = "gray34", 
+               size = 1,
                alpha = .5,
                linetype = "longdash") +
-    #geom_text(data = hurricane_landfall, label = Hurricane) +
+    #geom_label(aes(label = Hurricane)) + <----- #This freaking line won't work
     theme_minimal() +
     labs(title = "Google Searches of Hurricanes - 2017", 
         caption = "Source: Google Trends dashboard",
