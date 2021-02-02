@@ -85,7 +85,11 @@ Same relationship, but mapped to a continuous scale.
 ```{r tv states viz}
 #Near replication of the 538 figure
 ggplot(tv_states) +
-#Filling in ribbons first  
+#Placing lines first
+  geom_line(aes(x = date, y = florida), color = "#FFFFFF") +   
+  geom_line(aes(x = date, y = texas), color = "#FFFFFF") + 
+  geom_line(aes(x = date, y = puerto_rico), color = "#FFFFFF") +  
+#Filling in ribbons second  
   geom_ribbon(aes(x = date, y = florida, ymin = 0, ymax = florida), fill = "deeppink2", alpha = 0.98) +   
   geom_ribbon(aes(x = date, y = texas, ymin = 0, ymax = texas), fill = "sienna2", alpha = 0.98) + 
   geom_ribbon(aes(x = date, y = puerto_rico, ymin = 0, ymax = puerto_rico), fill = "cyan2", alpha = 0.98) +  
@@ -104,7 +108,8 @@ ggplot(tv_states) +
   geom_text(aes(x = as.Date("2017-10-01"), y = 1.35, label = "Puerto Rico"), size = 5, color = "black") +  
   labs(x = "",
        y = "Share of sentences",
-       title = "National Cable News Networks")
+       title = "National Cable News Networks") +
+  theme_minimal()
 
 ```
 
