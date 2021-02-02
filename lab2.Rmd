@@ -158,10 +158,11 @@ genderplot2 <- comic_characters %>%
          "sex",
          "alive",
          "appearances") %>% 
+  mutate(sex = as.factor(sex)) %>% 
   drop_na() 
 
-ggplot(genderplot2, aes(y = sex, x = appearances, fill = sex)) +
-  geom_jitter() +
+ggplot(genderplot2, aes(y = sex, x = appearances)) +
+  geom_jitter(aes(color = appearances)) +
   scale_colour_viridis_c() +
   labs(title = "Proportion of Characters by Sex", 
        subtitle = "As appear within DC or Marvel Comics",
