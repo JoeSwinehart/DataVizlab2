@@ -21,6 +21,7 @@ library(fivethirtyeightdata)
 library(here)
 library(tidyverse)
 library(lubridate)
+library(waffle)
 ```
 
 Visualize the change in trends for each hurricane over time in one plot with three scales. Map color to a discrete scale.
@@ -177,8 +178,29 @@ ggplot(genderplot2, aes(y = sex, x = appearances, fill = sex)) +
 ```
 
 ```{r comic characters viz 3}
-# Also taking this chunk - J
+#If you don't have this package, then here's the install line:
+#devtools::install_git("https://git.rud.is/hrbrmstr/waffle.git")
+library(waffle)
+#Prepping the waffle
+genderplot3 <- comic_characters %>% 
+  select(name, sex, appearances) %>% 
+  group_by(sex) %>% 
+  summarize(n = n()) %>% 
+  mutate(percent = round(n/sum(n)*100)) %>% 
+  filter(!is.na(sex))
+#Specifying variable for waffle
+sex_counts <- genderplot3$percent
+names(sex_counts) <- genderplot3$sex
+#The waffle
+waffle(sex_counts)
 
+
+
+#Try dotplot instead
+genderplot4 <- comic_characters %>% 
+  select(name, sex, appearances) %>% 
+  group_by(sex) %>% 
+  filter(!is.na(sex))
 ```
 
 
