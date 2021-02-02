@@ -109,9 +109,9 @@ ggplot(tv_states) +
   geom_line(aes(x = date, y = texas), color = "#FFFFFF") + 
   geom_line(aes(x = date, y = puerto_rico), color = "#FFFFFF") +  
 #Filling in ribbons second  
-  geom_ribbon(aes(x = date, y = florida, ymin = 0, ymax = florida), fill = "deeppink2", alpha = 0.98) +   
-  geom_ribbon(aes(x = date, y = texas, ymin = 0, ymax = texas), fill = "sienna2", alpha = 0.98) + 
-  geom_ribbon(aes(x = date, y = puerto_rico, ymin = 0, ymax = puerto_rico), fill = "cyan2", alpha = 0.98) +  
+  geom_ribbon(aes(x = date, y = florida, ymin = 0, ymax = florida), fill = "#F55285", alpha = 0.98) +   
+  geom_ribbon(aes(x = date, y = texas, ymin = 0, ymax = texas), fill = "#ED723C", alpha = 0.98) + 
+  geom_ribbon(aes(x = date, y = puerto_rico, ymin = 0, ymax = puerto_rico), fill = "#40C1C9", alpha = 0.98) +  
 #Identifying incidents (e.g., hurricane landfalls)
   geom_text(aes(x = as.Date("2017-08-25"), y = 3.1, label = "Harvey\nLandfall"), size = 4, color = "grey") +
   geom_vline(xintercept = as.Date("2017-08-25"), linetype = "dotted", color= "grey", size = 0.75) +
