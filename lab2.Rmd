@@ -77,20 +77,27 @@ Same relationship, but mapped to a continuous scale.
 
 ```
 
-```{r google trends viz 4}
-#Taking this chunk - J
-date <- as.Date(c('2017-08-25', '2017-09-10', NA, '2017-09-20'))
-Hurricane <- c('hurricane_harvey_us', 'hurricane_irma_us', 'hurricane_jose_us', 'hurricane_maria_us')
-
-hurricane_landfall <- data.frame(date, Hurricane)
-
-ggplot(trends_clean, aes(date, Ranking, color = Hurricane)) +
-  geom_line() +
-  geom_vline(aes(xintercept = date), hurricane_landfall)
-  labs(title = "Google Search Popularity", 
-       caption = "Source: Google Trends dashboard",
-       x = "Date",
-       y = "Search Ranking")
+```{r google trends viz 4, warning=FALSE}
+#Creating date and hurricane vectors to form landfall data frame
+  date <- as.Date(c('2017-08-25', '2017-09-10', NA, '2017-09-20'))
+  Hurricane <- c('hurricane_harvey_us', 'hurricane_irma_us', 'hurricane_jose_us', 'hurricane_maria_us')
+#Binding together vectors into data frame
+  hurricane_landfall <- data.frame(date, Hurricane)
+#Viz 1 with vertical lines and labels marking landfall
+  ggplot(trends_clean, aes(date, Ranking, color = Hurricane)) +
+    geom_line(size = 1) +
+    geom_vline(aes(xintercept = date), 
+               hurricane_landfall, 
+               size = 1, 
+               color = "gray34", 
+               alpha = .5,
+               linetype = "longdash") +
+    #geom_text(data = hurricane_landfall, label = Hurricane) +
+    theme_minimal() +
+    labs(title = "Google Searches of Hurricanes - 2017", 
+        caption = "Source: Google Trends dashboard",
+        x = "Date",
+        y = "Search Ranking")
 
 ```
 
@@ -158,11 +165,10 @@ genderplot2 <- comic_characters %>%
          "sex",
          "alive",
          "appearances") %>% 
-  mutate(sex = as.factor(sex)) %>% 
   drop_na() 
 
-ggplot(genderplot2, aes(y = sex, x = appearances)) +
-  geom_jitter(aes(color = appearances)) +
+ggplot(genderplot2, aes(y = sex, x = appearances, fill = sex)) +
+  geom_jitter() +
   scale_colour_viridis_c() +
   labs(title = "Proportion of Characters by Sex", 
        subtitle = "As appear within DC or Marvel Comics",
