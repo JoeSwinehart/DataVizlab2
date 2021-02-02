@@ -78,7 +78,7 @@ Same relationship, but mapped to a continuous scale.
 ```
 
 ```{r google trends viz 4}
-
+#Taking this chunk - J
 
 ```
 
@@ -159,7 +159,7 @@ ggplot(genderplot2, aes(y = sex, x = appearances, fill = sex)) +
 ```
 
 ```{r comic characters viz 3}
-
+# Also taking this chunk - J
 
 ```
 
