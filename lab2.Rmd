@@ -79,6 +79,18 @@ Same relationship, but mapped to a continuous scale.
 
 ```{r google trends viz 4}
 #Taking this chunk - J
+date <- as.Date(c('2017-08-25', '2017-09-10', NA, '2017-09-20'))
+Hurricane <- c('hurricane_harvey_us', 'hurricane_irma_us', 'hurricane_jose_us', 'hurricane_maria_us')
+
+hurricane_landfall <- data.frame(date, Hurricane)
+
+ggplot(trends_clean, aes(date, Ranking, color = Hurricane)) +
+  geom_line() +
+  geom_vline(aes(xintercept = date), hurricane_landfall)
+  labs(title = "Google Search Popularity", 
+       caption = "Source: Google Trends dashboard",
+       x = "Date",
+       y = "Search Ranking")
 
 ```
 
