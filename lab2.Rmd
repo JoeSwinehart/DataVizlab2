@@ -87,16 +87,16 @@ Same relationship, but mapped to a continuous scale.
 #Viz 1 with vertical lines and labels marking landfall
   ggplot(trends_clean, aes(date, Ranking, color = Hurricane)) +
     geom_line(size = 1) +
-      scale_color_discrete(name = "Hurricane", labels = c("Harvey", "Irma", "Jose", "Maria"))+
+    scale_color_discrete(name = "Hurricane", labels = c("Harvey", "Irma", "Jose", "Maria"))+
     geom_vline(aes(xintercept = date, color = Hurricane), 
                hurricane_landfall, 
                size = 1,
                alpha = .5,
                linetype = "longdash") +
-    geom_text(aes(x = as.Date("2017-08-25"), y = 52, label = "Harvey\nLandfall\nAug 25"), size = 4, color = "darkgray") +
-  geom_text(aes(x = as.Date("2017-09-10"), y = 100, label = "Irma\nLandfall\nSep 10"), size = 4, color = "darkgray") +
-  geom_text(aes(x = as.Date("2017-09-18"), y = 24, label = "Maria\nLandfall\nSep 18"), size = 4, color = "darkgray") +
-    #geom_label(aes(label = Hurricane)) + <----- #This freaking line won't work
+    geom_text(aes(x = as.Date("2017-08-25"), y = 50, label = "Landfall\nAug 25"), size = 4, color = "darkgray") +
+    geom_text(aes(x = as.Date("2017-09-10"), y = 90, label = "Landfall\nSep 10"), size = 4, color = "darkgray") +
+    geom_text(aes(x = as.Date("2017-09-18"), y = 30, label = "Landfall\nSep 18"), size = 4, color = "darkgray") +
+    #geom_label(aes(label = Hurricane)) + <----- #This freaking line won't work ignore it
     theme_minimal() +
     labs(title = "Google Searches of Hurricanes - 2017", 
         caption = "Source: Google Trends dashboard",
@@ -157,7 +157,7 @@ genderplot1 <- comic_characters %>%
                     # "NA" = "No Gender")))
 
 genderplot1final <- genderplot1 %>%
-  mutate(appearances = factor(appearances,
+  mutate(sex = factor(sex,
                               levels = c("Male Characters",
                                          "Female Characters",
                                          "NA",
@@ -167,8 +167,8 @@ genderplot1final <- genderplot1 %>%
                                          "Transgender Characters")))
 
 ggplot(genderplot1final, aes(y = sex)) +
-  geom_bar(stat = "appearances", aes(fill = sex)) +
-  scale_colour_viridis_c() +
+  geom_bar(aes(y = sex, fill = sex)) +
+  scale_colour_viridis_d() +
   labs(title = "Proportion of Characters by Sex", 
        subtitle = "As appear within DC or Marvel Comics",
        x = "Number of Appearances",
@@ -204,24 +204,24 @@ ordered_gender <- genderplot2 %>%
 genderplot2$sex <- factor(genderplot2$sex, levels = c("Male", "Female", "Agender", "Genderless", "Genderfluid", "Transgender"))
 
 #Plot
-ggplot(genderplot2, aes(x = sex, y = appearances, fill = sex)) +
-  geom_jitter(aes(color = sex, width = .25,), show.legend = FALSE, size = .65, stat = "identity") +
-  scale_colour_viridis_d(direction = -1) +
-  labs(title = "DC and Marvel Comic Characters by Sex",
-       x = "Number of Appearances",
-       y = "Gender Identification") +
-  theme_dark() +
-  theme(
-    plot.title = element_text(family = "Times", face = "bold", size = 18, lineheight = .8),
-    axis.text.x = element_text(family = "Helvetica", face = "bold", angle = 90, hjust = 1),
-                  element_line(linetype = 0),
-    axis.text.y = element_blank(),
-    panel.background = element_rect(color = "#797a7e")
-  )
+  ggplot(genderplot2, aes(x = sex, y = appearances, fill = sex)) +
+    geom_jitter(aes(color = sex, width = .25), show.legend = FALSE, size = .65, stat = "identity") +
+    scale_colour_viridis_d() +
+    labs(title = "DC and Marvel Comic Characters by Gender Identification",
+       x = "",
+       y = "") +
+    theme_dark() +
+    theme(
+      plot.title = element_text(family = "Times", face = "bold", size = 18, lineheight = .8),
+      axis.text.x = element_text(face = "bold", hjust = 1),
+                    element_line(linetype = 0),
+      axis.text.y = element_blank())
+    #annotate(geom_label())
 
 
 #To Do:  
-# - Font and size for y-axis label and title
+# - X-axis spacing
+# - Add labels with n?
   
 ```
 
@@ -237,30 +237,12 @@ genderplot3 <- comic_characters %>%
   summarize(n = n()) %>% 
   mutate(percent = (n/sum(n))*100)
   
-  rlang::last_error()
-  
 #Specifying variable for waffle
 sex_counts <- genderplot3$percent
 names(sex_counts) <- genderplot3$sex
 #The waffle
 waffle(sex_counts)
 
-ggplot(genderplot3, percent, sex) +
-  geom_tile(color = "white")
-
-#Try dotplot instead. Here's the data prep.
-genderplot4 <- comic_characters %>% 
-  select(sex, appearances) %>% 
-  group_by(sex) %>% 
-  filter(!is.na(sex)) %>% 
-  count() %>% 
-  fct_reorder()
-
-#Plotting 
-ggplot(genderplot4,
-       aes(n, sex)) +
-  geom_point()
-  
 ```
 
 Using a waffle chart theoretically sounded great, but as in Viz 1, the data did not present properly.
