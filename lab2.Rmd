@@ -93,9 +93,9 @@ Same relationship, but mapped to a continuous scale.
                size = 1,
                alpha = .5,
                linetype = "longdash") +
-    geom_text(aes(x = as.Date("2017-08-25"), y = 52, label = "Harvey\nLandfall"), size = 4, color = "darkgray") +
-  geom_text(aes(x = as.Date("2017-09-10"), y = 100, label = "Irma\nLandfall"), size = 4, color = "darkgray") +
-  geom_text(aes(x = as.Date("2017-09-18"), y = 24, label = "Maria\nLandfall"), size = 4, color = "darkgray") +
+    geom_text(aes(x = as.Date("2017-08-25"), y = 52, label = "Harvey\nLandfall\nAug 25"), size = 4, color = "darkgray") +
+  geom_text(aes(x = as.Date("2017-09-10"), y = 100, label = "Irma\nLandfall\nSep 10"), size = 4, color = "darkgray") +
+  geom_text(aes(x = as.Date("2017-09-18"), y = 24, label = "Maria\nLandfall\nSep 18"), size = 4, color = "darkgray") +
     #geom_label(aes(label = Hurricane)) + <----- #This freaking line won't work
     theme_minimal() +
     labs(title = "Google Searches of Hurricanes - 2017", 
@@ -173,24 +173,27 @@ genderplot2 <- comic_characters %>%
          "sex",
          "alive",
          "appearances") %>% 
-  drop_na() %>% 
+  drop_na() #%>% 
   #group_by(sex) %>% 
-  #count()
+  #count() %>% 
+  #mutate(rename("Agender" == 'Agender Characters'))
   #I had group_by() and count() to be able to specify gender ID and sort, but could not remember how to sort.
 
 
 #Plot
-ggplot(genderplot2, aes(y = sex, x = appearances, fill = sex)) +
+ggplot(genderplot2, aes(x = sex, y = appearances, fill = sex)) +
   geom_jitter(aes(color = sex, width = .25,), show.legend = FALSE, size = .65) +
   scale_colour_viridis_d(direction = -1) +
   labs(title = "DC and Marvel Comic Characters by Sex",
        x = "Number of Appearances",
        y = "Gender Identification") +
-  theme_classic() +
+  theme_dark() +
   theme(
-    axis.text.y = element_text(face = "bold"),
+    plot.title = element_text(family = "Times", face = "bold", size = 18, lineheight = .8),
+    axis.text.x = element_text(family = "Helvetica", face = "bold"),
                   element_line(linetype = 0),
-    axis.text.x = element_blank()
+    axis.text.y = element_blank(),
+    panel.background = element_rect(color = "#797a7e")
   )
 
 #To Do:  
