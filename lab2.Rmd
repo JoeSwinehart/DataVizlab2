@@ -10,12 +10,19 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE)
 ```
 
 ```{r raw data}
-if(!require(fivethirtyeight)) install.packages("fivethirtyeight", repos = "http://cran.us.r-project.org")
-remotes::install_github("fivethirtyeightdata/fivethirtyeightdata")
+# I deleted this code because (a) it's generally considered impolite to
+# install things on other people's computer without first asking permission, 
+# and (b) it actually wasn't doing what you wanted anyway, which is to say
+# it should have first checked to see if the package was installed, and then
+# installed it if not, but instead it was checking to see if the package was
+# needed, and then installing it if it was. So, best to just keep install
+# commands out of scripts, but you can put them in and comment them out if you
+# have an audience that may not know how to install packages.
 library(fivethirtyeight)
 library(fivethirtyeightdata)
 library(here)
@@ -25,106 +32,127 @@ library(waffle)
 ```
 
 Visualize the change in trends for each hurricane over time in one plot with three scales. Map color to a discrete scale.
-```{r google trends viz 1}
-
+```{r google-trends-viz-1}
 trends_clean <- google_trends %>% 
-  pivot_longer(c(`hurricane_harvey_us`, `hurricane_irma_us`, `hurricane_maria_us`, `hurricane_jose_us`), names_to = "Hurricane", values_to = "Ranking")
+  pivot_longer(starts_with("hurricane"), 
+               names_to = "Hurricane", 
+               values_to = "Ranking")
 
-ggplot(data=trends_clean, aes(x=date, y=Ranking, color = Hurricane))+
-geom_line()+ 
-  scale_color_discrete(name = "Hurricane", labels = c("Harvey", "Irma", "Jose", "Maria"))+
+ggplot(data = trends_clean, aes(x = date, y = Ranking, color = Hurricane)) +
+  geom_line() + 
+  scale_color_discrete(name = "Hurricane", 
+                       labels = c("Harvey", "Irma", "Jose", "Maria")) +
   labs(title = "Google Search Popularity", 
        subtitle = "According to the Google Trends dashboard",
        x = "Date",
        y = "Search Ranking")
-  
-
 ```
 
 Visualize the trends again, this time with solid shapes.
-```{r google trends viz 2}
+```{r google-trends-viz-2}
 #Geom_ribbons have updated ymin & ymax so they appear on the figures
 #thanks, David...I couldn't figure it out!
 trends_clean %>% 
   ggplot(aes(date, Ranking)) + 
-  geom_line()+
+  #geom_line() +
   geom_ribbon(aes(
     ymin = 0, 
-    ymax = Ranking), 
-    fill = "cornflowerblue",
-    alpha = .85)+
-  facet_wrap(~Hurricane, ncol = 1) +
-  theme_minimal()+
+    ymax = Ranking, 
+    fill = Hurricane),
+    alpha = .85) +
+  #facet_wrap(~Hurricane, ncol = 1) +
+  theme_minimal() +
   labs(title = "Google Search Popularity", 
        subtitle = "According to the Google Trends dashboard",
        x = "Date",
        y = "Search Ranking")
-  
-
 ```
 
 Same relationship, but mapped to a continuous scale.
 
-```{r google trends viz 3}
-
-  ggplot(trends_clean, aes(date, Hurricane)) + 
-  geom_tile(aes(fill=Ranking)) +
+```{r google-trends-viz-3}
+ggplot(trends_clean, aes(date, Hurricane)) + 
+  geom_tile(aes(fill = Ranking)) +
   scale_fill_viridis_c(option = "plasma") +
-  theme_minimal()+
+  theme_minimal() +
+  coord_fixed(expand = FALSE) +
   labs(title = "Google Search Popularity", 
        subtitle = "According to the Google Trends dashboard",
        x = "Date",
-       y = "Hurricane")
-
+       y = "Hurricane") +
+  theme(legend.position = "bottom")
 ```
 
-```{r google trends viz 4, warning=FALSE}
-#Creating date and hurricane vectors to form landfall data frame
-  date <- as.Date(c('2017-08-25', '2017-09-10', NA, '2017-09-20'))
-  Hurricane <- c('hurricane_harvey_us', 'hurricane_irma_us', 'hurricane_jose_us', 'hurricane_maria_us')
-#Binding together vectors into data frame
-  hurricane_landfall <- data.frame(date, Hurricane)
+```{r google-trends-viz-4, warning=FALSE}
+# Made some edits to get your geom_text to work the way I think you were trying 
+# to get it to work
+
+# just a slightly different way to create the data frame (not necessarily better)
+hurricane_landfall <- data.frame(
+  date = as.Date(c('2017-08-25', '2017-09-10', NA, '2017-09-20')), 
+  Hurricane = c('hurricane_harvey_us', 'hurricane_irma_us', 
+               'hurricane_jose_us', 'hurricane_maria_us'),
+  label_loc = c(50, 90, NA, 30)
+)
+
 #Viz 1 with vertical lines and labels marking landfall
-  ggplot(trends_clean, aes(date, Ranking, color = Hurricane)) +
-    geom_line(size = 1) +
-    scale_color_discrete(name = "Hurricane", labels = c("Harvey", "Irma", "Jose", "Maria"))+
-    geom_vline(aes(xintercept = date, color = Hurricane), 
-               hurricane_landfall, 
-               size = 1,
-               alpha = .5,
-               linetype = "longdash") +
-    geom_text(aes(x = as.Date("2017-08-25"), y = 50, label = "Landfall\nAug 25"), size = 4, color = "darkgray") +
-    geom_text(aes(x = as.Date("2017-09-10"), y = 90, label = "Landfall\nSep 10"), size = 4, color = "darkgray") +
-    geom_text(aes(x = as.Date("2017-09-18"), y = 30, label = "Landfall\nSep 18"), size = 4, color = "darkgray") +
-    #geom_label(aes(label = Hurricane)) + <----- #This freaking line won't work ignore it
-    theme_minimal() +
-    labs(title = "Google Searches of Hurricanes - 2017", 
-        caption = "Source: Google Trends dashboard",
-        x = "Date",
-        y = "Search Ranking")
+ggplot(trends_clean, aes(date, Ranking, color = Hurricane)) +
+  geom_line(size = 1) +
+  scale_color_discrete(name = "Hurricane", labels = c("Harvey", "Irma", "Jose", "Maria"))+
+  geom_vline(aes(xintercept = date, color = Hurricane), 
+             hurricane_landfall, 
+             size = 1,
+             alpha = .5,
+             linetype = "longdash") +
+  # geom_text(aes(x = as.Date("2017-08-25"), y = 50, label = "Landfall\nAug 25"), size = 4, color = "darkgray") +
+  # geom_text(aes(x = as.Date("2017-09-10"), y = 90, label = "Landfall\nSep 10"), size = 4, color = "darkgray") +
+  # geom_text(aes(x = as.Date("2017-09-18"), y = 30, label = "Landfall\nSep 18"), size = 4, color = "darkgray") +
+  geom_label(aes(label = paste0("Landfall\n", format(hurricane_landfall$date, "%b %m")), 
+                 y = label_loc),
+             data = hurricane_landfall) + #<----- #This freaking line won't work ignore it
+  theme_minimal() +
+  labs(title = "Google Searches of Hurricanes - 2017", 
+       caption = "Source: Google Trends dashboard",
+       x = "Date",
+       y = "Search Ranking")
 
 ```
 
-Replicate the “National cable news networks” plot from the story using the tv_states data. Don’t worry about all the labels. Try to match the colors and worry/obsess about getting them exact.
+Replicate the “National cable news networks” plot from the story using the tv_states data. Don’t worry about all the labels. Try to match the colors and **don't** worry/obsess about getting them exact.
 
 ```{r tv states viz}
+
+# this would have been quite a bit less code if you moved it to a longer format
+# first so you had a "state" or "place" column (or whatever you want to call it)
+
 #Near replication of the 538 figure
 ggplot(tv_states) +
 #Placing lines first
-  geom_line(aes(x = date, y = florida), color = "#FFFFFF") +   
-  geom_line(aes(x = date, y = texas), color = "#FFFFFF") + 
-  geom_line(aes(x = date, y = puerto_rico), color = "#FFFFFF") +  
+  # geom_line(aes(x = date, y = florida), color = "#FFFFFF") +   
+  # geom_line(aes(x = date, y = texas), color = "#FFFFFF") + 
+  # geom_line(aes(x = date, y = puerto_rico), color = "#FFFFFF") +  
 #Filling in ribbons second  
-  geom_ribbon(aes(x = date, y = florida, ymin = 0, ymax = florida), fill = "#F55285", alpha = 0.98) +   
-  geom_ribbon(aes(x = date, y = texas, ymin = 0, ymax = texas), fill = "#ED723C", alpha = 0.98) + 
-  geom_ribbon(aes(x = date, y = puerto_rico, ymin = 0, ymax = puerto_rico), fill = "#40C1C9", alpha = 0.98) +  
+  geom_ribbon(aes(x = date, y = florida, ymin = 0, ymax = florida), 
+              fill = "#F55285", color = "white", alpha = 0.98) +   
+  geom_ribbon(aes(x = date, y = texas, ymin = 0, ymax = texas), 
+              fill = "#ED723C", color = "white", alpha = 0.98) + 
+  geom_ribbon(aes(x = date, y = puerto_rico, ymin = 0, ymax = puerto_rico), 
+              fill = "#40C1C9", color = "white", alpha = 0.98) +  
 #Identifying incidents (e.g., hurricane landfalls)
-  geom_text(aes(x = as.Date("2017-08-25"), y = 3.1, label = "Harvey\nLandfall"), size = 4, color = "grey") +
-  geom_vline(xintercept = as.Date("2017-08-25"), linetype = "dotted", color= "grey", size = 0.75) +
-  geom_text(aes(x = as.Date("2017-09-07"), y = 3.3, label = "Irma\nLandfall"), size = 4, color = "grey") +
-  geom_vline(xintercept = as.Date("2017-09-07"), linetype = "dotted", color= "grey", size = 0.75) +
-  geom_text(aes(x = as.Date("2017-09-18"), y = 2.1, label = "Maria\nLandfall"), size = 4, color = "grey") +
-  geom_vline(xintercept = as.Date("2017-09-18"), linetype = "dotted", color= "grey", size = 0.75) +
+  geom_text(aes(x = as.Date("2017-08-25"), y = 3.1, label = "Harvey\nLandfall"), 
+            size = 4, color = "grey") +
+  geom_vline(xintercept = as.Date("2017-08-25"), 
+             linetype = "dotted", color= "grey", size = 0.75) +
+  geom_text(aes(x = as.Date("2017-09-07"), y = 3.3, label = "Irma\nLandfall"), 
+            size = 4, color = "grey") +
+  geom_vline(xintercept = as.Date("2017-09-07"), 
+             linetype = "dotted", color= "grey", size = 0.75) +
+  geom_text(aes(x = as.Date("2017-09-18"), y = 2.1, label = "Maria\nLandfall"), 
+            size = 4, color = "grey") +
+  geom_vline(xintercept = as.Date("2017-09-18"), 
+             linetype = "dotted", 
+             color = "grey", 
+             size = 0.75) +
   geom_text(aes(x = as.Date("2017-10-01"), y = 2.7, label = "Las Vegas\nshooting"), size = 4, color = "grey") +
   geom_vline(xintercept = as.Date("2017-10-01"), linetype = "dotted", color= "grey", size = 0.75) +
 #Labeling each state  
@@ -136,18 +164,20 @@ ggplot(tv_states) +
        title = "National Cable News Networks") +
   theme_minimal()
 
+
+# I stopped editing - it looks great but isn't super efficient. Reformatting
+# the data first would have helped.
 ```
 
 Use the comic_characters dataset to visualize the proportion of different genders using at least three different methods. With your final visualization, make any additional modifications you think would help reduce the cognitive load necessary to comprehend the figure.
 
-```{r comic characters viz 1}
-
+```{r comic-characters-viz-1}
 genderplot1 <- comic_characters %>%
-  select("publisher",
-         "name",
-         "sex",
-         "alive",
-         "appearances")
+  select(publisher,
+         name,
+         sex,
+         alive,
+         appearances)
 #%>%
   #mutate(appearances = as.character(appearances),
         #(fct_reorder(sex, "Male Characters",
@@ -158,32 +188,31 @@ genderplot1 <- comic_characters %>%
 
 genderplot1final <- genderplot1 %>%
   mutate(sex = factor(sex,
-                              levels = c("Male Characters",
-                                         "Female Characters",
-                                         "NA",
-                                         "Genderless Characters",
-                                         "Agender Characters",
-                                         "Genderfluid Characters",
-                                         "Transgender Characters")))
+                      levels = c("Male Characters",
+                                 "Female Characters",
+                                 "NA",
+                                 "Genderless Characters",
+                                 "Agender Characters",
+                                 "Genderfluid Characters",
+                                 "Transgender Characters")))
 
 ggplot(genderplot1final, aes(y = sex)) +
   geom_bar(aes(y = sex, fill = sex)) +
-  scale_colour_viridis_d() +
+  scale_fill_viridis_d() +
   labs(title = "Proportion of Characters by Sex", 
        subtitle = "As appear within DC or Marvel Comics",
        x = "Number of Appearances",
        y = "Gender Identification")
-
 ```
 
-```{r comic characters viz 2 - FINAL VIZ, warning = FALSE}
+```{r comic-characters-viz-2-FINAL-VIZ, warning = FALSE}
 #Prep data for plot
 genderplot2 <- comic_characters %>%
-  select("publisher",
-         "name",
-         "sex",
-         "alive",
-         "appearances") %>% 
+  select(publisher,
+         name,
+         sex,
+         alive,
+         appearances) %>% 
   drop_na() %>% 
   mutate(sex = fct_recode(sex,
                           "Male" = "Male Characters", 
@@ -200,33 +229,45 @@ ordered_gender <- genderplot2 %>%
   arrange(desc(appearances))
 
 #Use ordered list to re-level the sex factor in descending order
-genderplot2$sex <- factor(genderplot2$sex, levels = ordered_gender$sex)
+genderplot2$sex <- factor(genderplot2$sex, 
+                          levels = ordered_gender$sex)
 
 #Plot
-  ggplot(genderplot2, aes(x = sex, y = appearances, fill = sex)) +
-    geom_jitter(aes(color = sex, width = .25), show.legend = FALSE, size = .65, stat = "identity") +
-    scale_colour_viridis_d(direction = -1) +
-    labs(title = "DC and Marvel Comic Characters by Gender Identification",
+ggplot(genderplot2, aes(x = sex, y = appearances, fill = sex)) +
+  geom_jitter(aes(color = sex, width = .25), 
+              show.legend = FALSE, size = .65, stat = "identity") +
+  scale_colour_viridis_d(direction = -1) +
+  labs(title = "DC and Marvel Comic Characters by Gender Identification",
        x = "",
        y = "") +
-    annotate("text", x = 1, y = 3300, label = ordered_gender$appearances[1], size = 4, color = "black")+
-  annotate("text", x = 2, y = 1900, label = ordered_gender$appearances[2], size = 4, color = "black")+ 
-  annotate("text", x = 3, y = 600, label = ordered_gender$appearances[3], size = 4, color = "black")+ 
-  annotate("text", x = 4, y = 400, label = ordered_gender$appearances[4], size = 4, color = "black")+ 
-  annotate("text", x = 5, y = 350, label = ordered_gender$appearances[5], size = 4, color = "black")+ 
-  annotate("text", x = 6, y = 150, label = ordered_gender$appearances[6], size = 4, color = "black")+ 
-    theme_gray() +
-    theme(
-      plot.title = element_text(family = "Times", face = "bold", size = 18, lineheight = .8),
-      axis.text.x = element_text(face = "bold"),
-                    element_line(linetype = 0),
-      axis.text.y = element_blank())
-  
+  annotate("text", x = 1, y = 3300, label = ordered_gender$appearances[1], 
+           size = 4, color = "black")+
+  annotate("text", x = 2, y = 1900, label = ordered_gender$appearances[2], 
+           size = 4, color = "black")+ 
+  annotate("text", x = 3, y = 600, label = ordered_gender$appearances[3], 
+           size = 4, color = "black")+ 
+  annotate("text", x = 4, y = 400, label = ordered_gender$appearances[4], 
+           size = 4, color = "black")+ 
+  annotate("text", x = 5, y = 350, label = ordered_gender$appearances[5], 
+           size = 4, color = "black")+ 
+  annotate("text", x = 6, y = 150, label = ordered_gender$appearances[6], 
+           size = 4, color = "black")+ 
+  theme_gray() +
+  theme(
+    plot.title = element_text(family = "Times", face = "bold", size = 18, lineheight = .8),
+    axis.text.x = element_text(face = "bold"),
+                  element_line(linetype = 0),
+    axis.text.y = element_blank()
+  )
+ 
 ```
 
-```{r comic characters viz 3}
+```{r comic-characters-viz-3}
 #If you don't have this package, then here's the install line:
 #devtools::install_git("https://git.rud.is/hrbrmstr/waffle.git")
+
+# probably easier
+# remotes::install_github("hrbrmstr/waffle")
 
 #Prepping the waffle
 genderplot3 <- comic_characters %>% 
