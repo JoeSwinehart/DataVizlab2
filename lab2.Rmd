@@ -30,9 +30,9 @@ Visualize the change in trends for each hurricane over time in one plot with thr
 trends_clean <- google_trends %>% 
   pivot_longer(c(`hurricane_harvey_us`, `hurricane_irma_us`, `hurricane_maria_us`, `hurricane_jose_us`), names_to = "Hurricane", values_to = "Ranking")
 
-
 ggplot(data=trends_clean, aes(x=date, y=Ranking, color = Hurricane))+
 geom_line()+ 
+  scale_color_discrete(name = "Hurricane", labels = c("Harvey", "Irma", "Jose", "Maria"))+
   labs(title = "Google Search Popularity", 
        subtitle = "According to the Google Trends dashboard",
        x = "Date",
@@ -87,11 +87,15 @@ Same relationship, but mapped to a continuous scale.
 #Viz 1 with vertical lines and labels marking landfall
   ggplot(trends_clean, aes(date, Ranking, color = Hurricane)) +
     geom_line(size = 1) +
+      scale_color_discrete(name = "Hurricane", labels = c("Harvey", "Irma", "Jose", "Maria"))+
     geom_vline(aes(xintercept = date, color = Hurricane), 
                hurricane_landfall, 
                size = 1,
                alpha = .5,
                linetype = "longdash") +
+    geom_text(aes(x = as.Date("2017-08-25"), y = 52, label = "Harvey\nLandfall"), size = 4, color = "darkgray") +
+  geom_text(aes(x = as.Date("2017-09-10"), y = 100, label = "Irma\nLandfall"), size = 4, color = "darkgray") +
+  geom_text(aes(x = as.Date("2017-09-18"), y = 24, label = "Maria\nLandfall"), size = 4, color = "darkgray") +
     #geom_label(aes(label = Hurricane)) + <----- #This freaking line won't work
     theme_minimal() +
     labs(title = "Google Searches of Hurricanes - 2017", 
@@ -100,6 +104,8 @@ Same relationship, but mapped to a continuous scale.
         y = "Search Ranking")
 
 ```
+
+Replicate the “National cable news networks” plot from the story using the tv_states data. Don’t worry about all the labels. Try to match the colors and worry/obsess about getting them exact.
 
 ```{r tv states viz}
 #Near replication of the 538 figure
@@ -131,6 +137,8 @@ ggplot(tv_states) +
   theme_minimal()
 
 ```
+
+Use the comic_characters dataset to visualize the proportion of different genders using at least three different methods. With your final visualization, make any additional modifications you think would help reduce the cognitive load necessary to comprehend the figure.
 
 ```{r comic characters viz 1}
 
