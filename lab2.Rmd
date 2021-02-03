@@ -184,16 +184,28 @@ genderplot2 <- comic_characters %>%
          "sex",
          "alive",
          "appearances") %>% 
-  drop_na() #%>% 
-  #group_by(sex) %>% 
-  #count() %>% 
-  #mutate(rename("Agender" == 'Agender Characters'))
-  #I had group_by() and count() to be able to specify gender ID and sort, but could not remember how to sort.
+  drop_na() %>% 
+  mutate(sex = fct_recode(sex,
+                          "Male" = "Male Characters", 
+                          "Female" = "Female Characters",
+                          "Agender" = "Agender Characters",
+                          "Genderless" = "Genderless Characters",
+                          "Genderfluid" = "Genderfluid Characters",
+                          "Transgender" = "Transgender Characters"))
 
+#Leveraged Makayla's existing code to summarise then sort  
+ordered_gender <- genderplot2 %>% 
+  group_by(sex) %>% 
+  summarise(appearances = sum(appearances)) %>% 
+  arrange(desc(appearances))
+
+#Still can't quite connect the calculated and sorted sum list with the whole dataset, so I wrote
+#it out by hand *sigh*
+genderplot2$sex <- factor(genderplot2$sex, levels = c("Male", "Female", "Agender", "Genderless", "Genderfluid", "Transgender"))
 
 #Plot
 ggplot(genderplot2, aes(x = sex, y = appearances, fill = sex)) +
-  geom_jitter(aes(color = sex, width = .25,), show.legend = FALSE, size = .65) +
+  geom_jitter(aes(color = sex, width = .25,), show.legend = FALSE, size = .65, stat = "identity") +
   scale_colour_viridis_d(direction = -1) +
   labs(title = "DC and Marvel Comic Characters by Sex",
        x = "Number of Appearances",
@@ -207,10 +219,9 @@ ggplot(genderplot2, aes(x = sex, y = appearances, fill = sex)) +
     panel.background = element_rect(color = "#797a7e")
   )
 
+
 #To Do:  
-# - Reorder sex by descending count
 # - Font and size for y-axis label and title
-# - Change sex so it does not include the word "Characters"
   
 ```
 
