@@ -147,7 +147,8 @@ genderplot1 <- comic_characters %>%
          "name",
          "sex",
          "alive",
-         "appearances") #%>%
+         "appearances")
+#%>%
   #mutate(appearances = as.character(appearances),
         #(fct_reorder(sex, "Male Characters",
                       #"Female Characters",
@@ -155,8 +156,18 @@ genderplot1 <- comic_characters %>%
                      #"Agender Characters",
                     # "NA" = "No Gender")))
 
-ggplot(genderplot1, aes(y = sex)) +
-  geom_bar(aes(fill = sex)) +
+genderplot1final <- genderplot1 %>%
+  mutate(appearances = factor(appearances,
+                              levels = c("Male Characters",
+                                         "Female Characters",
+                                         "NA",
+                                         "Genderless Characters",
+                                         "Agender Characters",
+                                         "Genderfluid Characters",
+                                         "Transgender Characters")))
+
+ggplot(genderplot1final, aes(y = sex)) +
+  geom_bar(stat = "appearances", aes(fill = sex)) +
   scale_colour_viridis_c() +
   labs(title = "Proportion of Characters by Sex", 
        subtitle = "As appear within DC or Marvel Comics",
@@ -190,7 +201,7 @@ ggplot(genderplot2, aes(x = sex, y = appearances, fill = sex)) +
   theme_dark() +
   theme(
     plot.title = element_text(family = "Times", face = "bold", size = 18, lineheight = .8),
-    axis.text.x = element_text(family = "Helvetica", face = "bold"),
+    axis.text.x = element_text(family = "Helvetica", face = "bold", angle = 90, hjust = 1),
                   element_line(linetype = 0),
     axis.text.y = element_blank(),
     panel.background = element_rect(color = "#797a7e")
@@ -198,7 +209,6 @@ ggplot(genderplot2, aes(x = sex, y = appearances, fill = sex)) +
 
 #To Do:  
 # - Reorder sex by descending count
-# - Figure out x-axis so it isn't confusing
 # - Font and size for y-axis label and title
 # - Change sex so it does not include the word "Characters"
   
