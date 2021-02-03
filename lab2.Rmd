@@ -157,51 +157,81 @@ ggplot(genderplot1, aes(y = sex)) +
 
 ```
 
-```{r comic characters viz 2}
-
+```{r comic characters viz 2 - FINAL VIZ, warning = FALSE}
+#Prep data for plot
 genderplot2 <- comic_characters %>%
   select("publisher",
          "name",
          "sex",
          "alive",
          "appearances") %>% 
-  drop_na() 
+  drop_na() %>% 
+  #group_by(sex) %>% 
+  #count()
+  #I had group_by() and count() to be able to specify gender ID and sort, but could not remember how to sort.
 
+
+#Plot
 ggplot(genderplot2, aes(y = sex, x = appearances, fill = sex)) +
-  geom_jitter() +
-  scale_colour_viridis_c() +
-  labs(title = "Proportion of Characters by Sex", 
-       subtitle = "As appear within DC or Marvel Comics",
+  geom_jitter(aes(color = sex, width = .25,), show.legend = FALSE, size = .65) +
+  scale_colour_viridis_d(direction = -1) +
+  labs(title = "DC and Marvel Comic Characters by Sex",
        x = "Number of Appearances",
-       y = "Gender Identification")
+       y = "Gender Identification") +
+  theme_classic() +
+  theme(
+    axis.text.y = element_text(face = "bold"),
+                  element_line(linetype = 0),
+    axis.text.x = element_blank()
+  )
+
+#To Do:  
+# - Reorder sex by descending count
+# - Figure out x-axis so it isn't confusing
+# - Font and size for y-axis label and title
+# - Change sex so it does not include the word "Characters"
   
 ```
 
 ```{r comic characters viz 3}
 #If you don't have this package, then here's the install line:
 #devtools::install_git("https://git.rud.is/hrbrmstr/waffle.git")
-library(waffle)
+
 #Prepping the waffle
 genderplot3 <- comic_characters %>% 
   select(name, sex, appearances) %>% 
   group_by(sex) %>% 
+  filter(!is.na(sex)) %>% 
   summarize(n = n()) %>% 
-  mutate(percent = round(n/sum(n)*100)) %>% 
-  filter(!is.na(sex))
+  mutate(percent = (n/sum(n))*100)
+  
+  rlang::last_error()
+  
 #Specifying variable for waffle
 sex_counts <- genderplot3$percent
 names(sex_counts) <- genderplot3$sex
 #The waffle
 waffle(sex_counts)
 
+ggplot(genderplot3, percent, sex) +
+  geom_tile(color = "white")
 
-
-#Try dotplot instead
+#Try dotplot instead. Here's the data prep.
 genderplot4 <- comic_characters %>% 
-  select(name, sex, appearances) %>% 
+  select(sex, appearances) %>% 
   group_by(sex) %>% 
-  filter(!is.na(sex))
+  filter(!is.na(sex)) %>% 
+  count() %>% 
+  fct_reorder()
+
+#Plotting 
+ggplot(genderplot4,
+       aes(n, sex)) +
+  geom_point()
+  
 ```
 
+Using a waffle chart theoretically sounded great, but as in Viz 1, the data did not present properly.
 
+Mainly, the numbers for non-male or -female characters were so low that they didn't show up in the viz.
 
